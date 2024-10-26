@@ -15,7 +15,8 @@ class EmrDatapipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        EMR_CLUSTER_NAME = "cdk-demo"
+        emr_cluster_name = "cdk-demo"
+        emr_version = "emr-7.2.0"
         
         # Create a new VPC for EMR cluster
         vpc = aws_ec2.Vpc(self, "EMRStackVPC",
@@ -45,14 +46,12 @@ class EmrDatapipelineStack(Stack):
             termination_protected=False
         )
 
-        emr_version = self.node.try_get_context("emr_version") or "emr-7.2.0"
-
         # Specifies and EMR cluster resource
         emr_cfn_cluster = aws_emr.CfnCluster(self, "EMRCluster",
             instances=emr_instances,
             # In order to use the default role for `job_flow_role`, you must have already created it using the CLI or console
             job_flow_role="EMR_EC2_DefaultRole",
-            name=EMR_CLUSTER_NAME,
+            name=emr_cluster_name,
             service_role="EMR_DefaultRole",
             applications=[
                 aws_emr.CfnCluster.ApplicationProperty(name="Hadoop"),
